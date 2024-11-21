@@ -40,7 +40,9 @@ def maxR(r, S):
         else:
              return S[0]
 
-pc = np.linspace(0.1, 2.5*10**6, 10)
+pc = np.logspace(-1, 6, 100)
+#pc = np.linspace(10e-1, 2.5*10e6, 10)
+#np.append(pc, 2.5*10e6)
 ue = 2
 R0 = (7.72*10**8/ue)
 M0 = 5.67*10**33/(ue**2)
@@ -49,8 +51,11 @@ p0 = 9.74*10**5*ue*const.g0
 fig, ax = plt.subplots() 
 
 for i in range(len(pc)):
+    maxR.terminal = True
     sol = sc.integrate.solve_ivp(dSstate_dr, (0.01, 10), np.array([pc[i],0]), events = maxR)
-    ax.plot(sol.t_events[0][0]*R0/6.957e10, sol.y_events[0][0][1]*M0/2e33, 'o') #t is r and y[0] is p, y[1] is m
+    print(sol.t_events[0][0])
+    print(sol.y_events[0][0][1])
+    ax.plot(sol.t_events[0][0]*R0/6.957e10, sol.y_events[0][0][1]*M0/2e33, marker = 'o') #t is r and y[0] is p, y[1] is m
     print(i, 'done')
 
 #ax.plot(sol.t*R0, sol.y[0]*p0, label = f'pc={pc[1]}') #t is r and y[0] is p, y[1] is m
@@ -58,7 +63,6 @@ for i in range(len(pc)):
 ax.set_title('r vs m')  # title and axis labels
 ax.set_xlabel('m') 
 ax.set_ylabel('r')  
-ax.legend()
 plt.grid(True)  # adding grid
 # plt.savefig('TsouSonya_Lab5_Fig1.png') # save to file
 plt.show()
