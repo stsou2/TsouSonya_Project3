@@ -51,7 +51,7 @@ def maxR(r, S):
 
 ########## Part 2
 
-pc = np.logspace(-1, 6.4, 10, endpoint=True)
+pc = np.logspace(-1, 6.398, 10, endpoint=True)
 ue = 2
 R0 = (7.72*10**8/ue)
 M0 = 5.67*10**33/(ue**2)
@@ -82,7 +82,7 @@ print(f"Estimated mass limit is about {round(np.abs(((mass.value-5.836/(ue**2))/
 
 import pandas as pd #for simpler table comparaison
 
-pc = np.logspace(-1, 6.4, 3, endpoint=True)
+pc = np.logspace(-1, 6.398, 3, endpoint=True)
 methods = ['RK45', 'BDF']
 
 vals3 = np.zeros((len(pc), len(methods)*3))
@@ -97,10 +97,15 @@ for i in range(len(pc)):
         vals3[i, methods.index(method)] = rad
         vals3[i, methods.index(method)+3] = mass 
 
-print(vals3)
-#perc_diff = (np.abs(A-B)/((A+B)*0.5))*100
+vals3[:,2] = (np.abs(vals3[:,0]-vals3[:,1])/((vals3[:,0]+vals3[:,1])*0.5))*100 # 3rd col is percent diff between the radii calculated for each method
+vals3[:,5] = (np.abs(vals3[:,3]-vals3[:,4])/((vals3[:,3]+vals3[:,4])*0.5))*100 # 5th col is percent diff between the mass calculated for each method
 
-#print(pd.DataFrame(vals_list, columns=['Radius: RK45', 'Radius: BDF', '% Diff', 'Mass: RK45', 'Mass: BDF', '% Diff'], index = pc.round(1)))
+vals3[:,0:2] = (vals3[:,0:2]*u.cm).to(u.solRad) #converting units
+vals3[:,3:5] = (vals3[:,3:5]*u.g).to(u.solMass)
+
+print("\nPart 3")
+print(pd.DataFrame(vals3, columns=['Radius: RK45', 'Radius: BDF', '% Diff', 'Mass: RK45', 'Mass: BDF', '% Diff'], index = pc.round(1)))
+# Results are less than or about 1% different at most
 
 ########## Part 4
 
