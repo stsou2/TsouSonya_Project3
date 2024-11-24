@@ -76,7 +76,7 @@ plt.savefig('TsouSonya_Project3_Fig1_RvMplot.png') # save to file
 print(f"Estimated Chandrasekhar limit: {mass}")
 print(f"Kippenhahn & Weigert (1990) MCh: {5.836/(ue**2)*u.solMass} ")
 print(f"Estimated mass limit is about {round(((mass.value-5.836/(ue**2))/(5.836/(ue**2)))*100, 3)}% more")
-plt.show()
+#plt.show()
 
 ########## Part 3
 
@@ -130,9 +130,14 @@ for i in range(len(pc)):
 
 f = sc.interpolate.interp1d(mass_list, radius_list)
 
-plt.errorbar(x=M_Msun, y=R_Rsun, yerr = R_unc, xerr = M_unc, fmt='o')
-plt.plot(mass_list[::2], f(mass_list[::2]), '-')
-plt.xlabel('Mass (solar mass units)')
-plt.ylabel('Radius (solar radii)')
+fig, ax2 = plt.subplots()
+ax2.errorbar(x=M_Msun, y=R_Rsun, yerr = R_unc, xerr = M_unc, fmt='o', label = 'Observed')
+ax2.plot(mass_list, f(mass_list), '-', label = 'Computed')
+ax2.set_xlabel('Mass (solar mass units)')
+ax2.set_ylabel('Radius (solar radii)')
+ax2.set_title('White Dwarf: Radius vs Mass, Observed and Computed')
+plt.legend()
 plt.grid(True)
+plt.savefig('TsouSonya_Project3_Fig2_Obsvplot.png') # save to file
+
 plt.show()
