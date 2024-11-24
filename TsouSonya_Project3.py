@@ -76,7 +76,7 @@ plt.savefig('TsouSonya_Project3_Fig1_RvMplot.png') # save to file
 print(f"Estimated Chandrasekhar limit: {mass}")
 print(f"Kippenhahn & Weigert (1990) MCh: {5.836/(ue**2)*u.solMass} ")
 print(f"Estimated mass limit is about {round(np.abs(((mass.value-5.836/(ue**2))/(5.836/(ue**2)))*100), 3)}% less")
-plt.show()
+#plt.show()
 
 ########## Part 3
 
@@ -93,9 +93,7 @@ for i in range(len(pc)):
     mass = ((sol.y_events[0][0][1]*M0)*u.g).to(u.solMass) # converting mass to solar mass
     RK45_list.append((radius, mass))
 
-RK45_arr = np.array(RK45_list)
-
-print(pd.dataframe(RK45_list, columns=['Radius', 'Mass'], rows=pc))
+print(pd.DataFrame(RK45_list, columns=['Radius', 'Mass'], index = pc.round(1)))
 
 ########## Part 4
 
