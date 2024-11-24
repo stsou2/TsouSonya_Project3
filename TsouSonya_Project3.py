@@ -5,8 +5,7 @@ from astropy import constants as const
 from astropy import units as u
 
 
-# Part 1
-
+########## Part 1
 
 def dSstate_dr(r, S):
     '''
@@ -50,6 +49,8 @@ def maxR(r, S):
     else:
         return S[0]
 
+########## Part 2
+
 pc = np.logspace(-1, 6.4, 10, endpoint=True)
 ue = 2
 R0 = (7.72*10**8/ue)
@@ -76,3 +77,26 @@ print(f"Estimated Chandrasekhar limit: {mass}")
 print(f"Kippenhahn & Weigert (1990) MCh: {5.836/(ue**2)*u.solMass} ")
 print(f"Estimated mass limit is about {round(np.abs(((mass.value-5.836/(ue**2))/(5.836/(ue**2)))*100), 3)}% less")
 plt.show()
+
+########## Part 3
+
+import pandas as pd #for simpler table comparaison
+
+pc = np.logspace(-1, 6.4, 3, endpoint=True)
+
+# original (RK45) for comparaison
+RK45_list = []
+for i in range(len(pc)):
+    maxR.terminal = True
+    sol = sc.integrate.solve_ivp(dSstate_dr, (1e-8, 1e5), np.array([pc[i],0]), method = 'RK45', events = maxR)
+    radius = ((sol.t_events[0][0]*R0)*u.cm).to(u.solRad) # converting radius to solar radii
+    mass = ((sol.y_events[0][0][1]*M0)*u.g).to(u.solMass) # converting mass to solar mass
+    RK45_list.append((radius, mass))
+
+RK45_arr = np.array(RK45_list)
+
+print(pd.dataframe(RK45_list, columns=['Radius', 'Mass'], rows=pc))
+
+########## Part 4
+
+
