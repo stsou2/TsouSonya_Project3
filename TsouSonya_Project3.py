@@ -11,7 +11,7 @@ def dSstate_dr(r, S):
     '''
     Args:
 
-    r (array-like): dependant variable times
+    r (array-like): dependant variable 
     S (array-like): state vector [p, m]
    
     Returns:
@@ -22,7 +22,7 @@ def dSstate_dr(r, S):
     p = S[0]
     m = S[1]
 
-    x = np.sign(p) * (np.abs(p)) ** (1/3) # numpy throws warning for fractional powers of negative numbers
+    x = np.sign(p) * (np.abs(p)) ** (1/3) # numpy throws warning for fractional powers of negative or very small numbers
     gamma = (x**2)/(3*((1+x**2)**0.5))
  
     #derivatives 
@@ -37,7 +37,7 @@ def maxR(r, S):
     '''
     Args:
 
-    r (array-like): dependant variable times
+    r (array-like): dependant variable 
     S (array-like): state vector [p, m]
    
     Returns:
