@@ -83,17 +83,24 @@ print(f"Estimated mass limit is about {round(np.abs(((mass.value-5.836/(ue**2))/
 import pandas as pd #for simpler table comparaison
 
 pc = np.logspace(-1, 6.4, 3, endpoint=True)
+methods = ['RK45', 'BDF']
 
-# original (RK45) for comparaison
-RK45_list = []
+vals3 = np.zeros((len(pc), len(methods)*3))
+
 for i in range(len(pc)):
-    maxR.terminal = True
-    sol = sc.integrate.solve_ivp(dSstate_dr, (1e-8, 1e5), np.array([pc[i],0]), method = 'RK45', events = maxR)
-    radius = ((sol.t_events[0][0]*R0)*u.cm).to(u.solRad) # converting radius to solar radii
-    mass = ((sol.y_events[0][0][1]*M0)*u.g).to(u.solMass) # converting mass to solar mass
-    RK45_list.append((radius, mass))
+    for method in methods:
+        maxR.terminal = True
+        sol = sc.integrate.solve_ivp(dSstate_dr, (1e-8, 1e5), np.array([pc[i],0]), method = method, events = maxR)
+        rad = (sol.t_events[0][0]*R0) 
+        mass = (sol.y_events[0][0][1]*M0)
 
-print(pd.DataFrame(RK45_list, columns=['Radius', 'Mass'], index = pc.round(1)))
+        vals3[i, methods.index(method)] = rad
+        vals3[i, methods.index(method)+3] = mass 
+
+print(vals3)
+#perc_diff = (np.abs(A-B)/((A+B)*0.5))*100
+
+#print(pd.DataFrame(vals_list, columns=['Radius: RK45', 'Radius: BDF', '% Diff', 'Mass: RK45', 'Mass: BDF', '% Diff'], index = pc.round(1)))
 
 ########## Part 4
 
