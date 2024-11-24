@@ -51,7 +51,7 @@ def maxR(r, S):
 
 ########## Part 2
 
-pc = np.logspace(-1, 6.398, 10, endpoint=True)
+pc = np.logspace(-1, np.log(2.5e6), 10, endpoint=True)
 ue = 2
 R0 = (7.72*10**8/ue)
 M0 = 5.67*10**33/(ue**2)
@@ -59,8 +59,8 @@ p0 = 9.74*10**5*ue*const.g0
 
 fig, ax = plt.subplots() 
 
+maxR.terminal = True # Will terminate once event has been reached. Value of interest will be the singular value in sol.t_events/y_events or the last value in sol.t/y
 for i in range(len(pc)):
-    maxR.terminal = True # Will terminate once event has been reached. Value of interest will be the singular value in sol.t_events/y_events or the last value in sol.t/y
     sol = sc.integrate.solve_ivp(dSstate_dr, (1e-8, 1e5), np.array([pc[i],0]), method = 'RK45', events = maxR)
     radius = ((sol.t_events[0][0]*R0)*u.cm).to(u.solRad) # converting radius to solar radii
     mass = ((sol.y_events[0][0][1]*M0)*u.g).to(u.solMass) # converting mass to solar mass
@@ -76,20 +76,19 @@ plt.savefig('TsouSonya_Project3_Fig1_RvMplot.png') # save to file
 print(f"Estimated Chandrasekhar limit: {mass}")
 print(f"Kippenhahn & Weigert (1990) MCh: {5.836/(ue**2)*u.solMass} ")
 print(f"Estimated mass limit is about {round(np.abs(((mass.value-5.836/(ue**2))/(5.836/(ue**2)))*100), 3)}% less")
-#plt.show()
+plt.show()
 
 ########## Part 3
 
 import pandas as pd #for simpler table comparaison
 
-pc = np.logspace(-1, 6.398, 3, endpoint=True)
+pc = np.logspace(-1, np.log(2.5e6), 3, endpoint=True)
 methods = ['RK45', 'BDF']
 
 vals3 = np.zeros((len(pc), len(methods)*3))
 
 for i in range(len(pc)):
     for method in methods:
-        maxR.terminal = True
         sol = sc.integrate.solve_ivp(dSstate_dr, (1e-8, 1e5), np.array([pc[i],0]), method = method, events = maxR)
         rad = (sol.t_events[0][0]*R0) 
         mass = (sol.y_events[0][0][1]*M0)
@@ -104,9 +103,18 @@ vals3[:,0:2] = (vals3[:,0:2]*u.cm).to(u.solRad) #converting units
 vals3[:,3:5] = (vals3[:,3:5]*u.g).to(u.solMass)
 
 print("\nPart 3")
-print(pd.DataFrame(vals3, columns=['Radius: RK45', 'Radius: BDF', '% Diff', 'Mass: RK45', 'Mass: BDF', '% Diff'], index = pc.round(1)))
+print(pd.DataFrame(vals3, columns=['Radius: RK45', 'Radius: BDF', '% Diff', 'Mass: RK45', 'Mass: BDF', '% Diff'], index = pc))
 # Results are less than or about 1% different at most
 
 ########## Part 4
+data = np.loadtxt('TsouSonya_Project3/wd_mass_radius.csv', delimiter = ',', skiprows=1) 
+M_Msun = data[:, 0]  
+M_unc = data[:, 1]  
+R_Rsun = data[:, 2]
+R_unc = data[:, 3]
 
-
+plt.errorbar(x=M_Msun, y=R_Rsun, yerr = R_unc, xerr = M_unc, fmt='o')
+plt.xlabel('Mass (solar mass units)')
+plt.ylabel('Radius (solar radii)')
+plt.grid(True)
+plt.show()
